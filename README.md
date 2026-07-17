@@ -7,3 +7,5 @@ Day 1:
 - Installed Python
 - Installed Git
 - Created my first Python program
+learned how to create a git branch
+practiced git workflow
