@@ -3,7 +3,6 @@ name = "whatsapp-ai-assistant"
 version = "0.1.0"
 description = "Secure, privacy-first AI WhatsApp Personal Assistant (official Cloud API)"
 requires-python = ">=3.12"
-readme = "../README.md"
 license = { text = "MIT" }
 
 # Core runtime dependencies — only what the code actually imports. LLM providers
