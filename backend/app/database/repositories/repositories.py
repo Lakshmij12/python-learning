@@ -26,6 +26,16 @@ class UserRepository(BaseRepository[User]):
         )
         return (await self.session.execute(stmt)).scalar_one_or_none()
 
+    async def first_active(self) -> User | None:
+        """Return the single active account owner (single-tenant design)."""
+        stmt = (
+            select(User)
+            .where(User.is_active.is_(True), User.deleted_at.is_(None))
+            .order_by(User.created_at.asc())
+            .limit(1)
+        )
+        return (await self.session.execute(stmt)).scalar_one_or_none()
+
 
 class SessionRepository(BaseRepository[Session]):
     model = Session
