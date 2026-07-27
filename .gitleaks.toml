@@ -1,0 +1,21 @@
+# gitleaks configuration.
+# Extends the default ruleset and allowlists files that legitimately contain
+# non-secret placeholder credentials (test fixtures and the example env file).
+title = "whatsapp-ai-assistant gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow deliberate fake credentials in tests and examples"
+# Regexes matched against the file path in each commit's diff.
+paths = [
+  '''backend/tests/''',
+  '''\.env\.example$''',
+  '''docs/''',
+]
+# Extra safety net: ignore the specific placeholder password used across tests.
+regexes = [
+  '''StrongPass123''',
+  '''timing-equaliser-not-a-real-password''',
+]
