@@ -1,0 +1,41 @@
+# Secrets / local env — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+npm-debug.log*
+
+# Editors / OS
+.DS_Store
+.idea/
+*.swp
+
+# Data / uploads / models
+data/
+uploads/
+*.sqlite3
+ollama_models/

@@ -1,0 +1,92 @@
+# Full local/production-like stack. Secrets come from a .env file (never commit
+# it). Generate secrets with: python scripts/generate_keys.py
+#
+#   docker compose up --build
+#
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${DB_USER:-assistant}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-assistant}
+      POSTGRES_DB: ${DB_NAME:-assistant}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-assistant}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollamadata:/root/.ollama
+    profiles: ["local-ai"]
+
+  backend:
+    build: ./backend
+    env_file: [.env]
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      OLLAMA_BASE_URL: http://ollama:11434
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    # Apply migrations, then start the API server.
+    command: >
+      sh -c "alembic upgrade head &&
+             gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker
+             --workers 4 --bind 0.0.0.0:8000 --timeout 120 --access-logfile -"
+
+  worker:
+    build: ./backend
+    env_file: [.env]
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    command: ["celery", "-A", "app.workers.celery_app.celery_app", "worker", "--loglevel=info"]
+
+  beat:
+    build: ./backend
+    env_file: [.env]
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+    depends_on:
+      redis: { condition: service_healthy }
+    command: ["celery", "-A", "app.workers.celery_app.celery_app", "beat", "--loglevel=info"]
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on: [backend]
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on: [backend, frontend]
+
+volumes:
+  pgdata:
+  redisdata:
+  ollamadata:
