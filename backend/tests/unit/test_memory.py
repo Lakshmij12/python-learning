@@ -5,7 +5,6 @@ from __future__ import annotations
 import uuid
 
 import pytest
-
 from app.llm.base import ChatResult, EmbeddingResult, Role, Usage
 from app.memory.service import MemoryService
 from app.memory.working import WorkingMemory
@@ -43,7 +42,9 @@ class FakeRouter:
             vectors=[[0.1, 0.2, 0.3] for _ in texts], provider="fake", model="fake-embed"
         )
 
-    async def chat(self, messages, *, tools=None, temperature=None, max_tokens=None, user_id=None):  # noqa: ANN001
+    async def chat(
+        self, messages, *, tools=None, temperature=None, max_tokens=None, user_id=None
+    ):  # noqa: ANN001
         return ChatResult(content="ok", provider="fake", model="fake", usage=Usage(1, 1))
 
 
@@ -83,14 +84,14 @@ async def test_working_memory_without_redis_is_noop() -> None:
 
 
 async def test_remember_persists_memory_and_embedding(db_session) -> None:  # noqa: ANN001
-    from sqlalchemy import func, select
-
     from app.models.memory import Embedding, Memory
+    from sqlalchemy import func, select
 
     user_id = uuid.uuid4()
     svc = MemoryService(db_session, FakeRouter())  # type: ignore[arg-type]
-    mem = await svc.remember(user_id=user_id, content="Owner prefers metric units",
-                             memory_type=MemoryType.PROFILE)
+    mem = await svc.remember(
+        user_id=user_id, content="Owner prefers metric units", memory_type=MemoryType.PROFILE
+    )
     assert mem.content != "Owner prefers metric units"  # encrypted
     mem_count = (await db_session.execute(select(func.count()).select_from(Memory))).scalar_one()
     emb_count = (await db_session.execute(select(func.count()).select_from(Embedding))).scalar_one()

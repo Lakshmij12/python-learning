@@ -60,7 +60,14 @@ class OpenAIProvider(LLMProvider):
             payload["max_tokens"] = max_tokens
         if tools:
             payload["tools"] = [
-                {"type": "function", "function": {"name": t.name, "description": t.description, "parameters": t.parameters}}
+                {
+                    "type": "function",
+                    "function": {
+                        "name": t.name,
+                        "description": t.description,
+                        "parameters": t.parameters,
+                    },
+                }
                 for t in tools
             ]
 
@@ -70,7 +77,11 @@ class OpenAIProvider(LLMProvider):
 
         choice = data["choices"][0]["message"]
         tool_calls = [
-            ToolCall(id=tc["id"], name=tc["function"]["name"], arguments=_safe_json(tc["function"]["arguments"]))
+            ToolCall(
+                id=tc["id"],
+                name=tc["function"]["name"],
+                arguments=_safe_json(tc["function"]["arguments"]),
+            )
             for tc in choice.get("tool_calls", []) or []
         ]
         usage = data.get("usage", {})

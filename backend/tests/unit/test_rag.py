@@ -5,7 +5,6 @@ from __future__ import annotations
 import uuid
 
 import pytest
-
 from app.llm.base import EmbeddingResult
 from app.models.enums import DocumentStatus
 from app.rag.chunker import chunk_text

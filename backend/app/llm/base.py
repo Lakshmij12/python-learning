@@ -89,7 +89,5 @@ class LLMProvider(ABC):
         """Generate a chat completion."""
 
     @abstractmethod
-    async def embed(
-        self, texts: list[str], *, model: str | None = None
-    ) -> EmbeddingResult:
+    async def embed(self, texts: list[str], *, model: str | None = None) -> EmbeddingResult:
         """Embed one or more texts."""

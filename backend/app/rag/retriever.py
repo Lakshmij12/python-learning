@@ -77,7 +77,5 @@ class Retriever:
                 )
             )
 
-        context = "\n\n".join(
-            f"[{i + 1}] ({c.source}) {c.text}" for i, c in enumerate(citations)
-        )
+        context = "\n\n".join(f"[{i + 1}] ({c.source}) {c.text}" for i, c in enumerate(citations))
         return RetrievalResult(context=context, citations=citations)

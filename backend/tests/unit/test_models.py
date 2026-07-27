@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import uuid
+from datetime import UTC
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.database.repositories.repositories import (
     ConversationRepository,
     MessageRepository,
@@ -14,21 +13,18 @@ from app.database.repositories.repositories import (
     UserRepository,
 )
 from app.models.enums import MessageDirection, MessageRole
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytestmark = pytest.mark.asyncio
 
 
 async def _make_user(session: AsyncSession) -> uuid.UUID:
-    user = await UserRepository(session).create(
-        email="me@example.com", password_hash="hashed"
-    )
+    user = await UserRepository(session).create(email="me@example.com", password_hash="hashed")
     return user.id
 
 
 async def test_user_uuid_pk_and_timestamps(db_session: AsyncSession) -> None:
-    user = await UserRepository(db_session).create(
-        email="owner@example.com", password_hash="h"
-    )
+    user = await UserRepository(db_session).create(email="owner@example.com", password_hash="h")
     assert isinstance(user.id, uuid.UUID)
     assert user.created_at is not None
     assert user.updated_at is not None
@@ -65,12 +61,12 @@ async def test_message_provider_id_dedupe(db_session: AsyncSession) -> None:
 
 
 async def test_recent_for_conversation_is_chronological(db_session: AsyncSession) -> None:
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
     user_id = await _make_user(db_session)
     conv = await ConversationRepository(db_session).get_or_create(user_id, "155500033")
     msgs = MessageRepository(db_session)
-    base = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    base = datetime(2026, 1, 1, tzinfo=UTC)
     for i in range(5):
         # Explicit, distinct timestamps (SQLite CURRENT_TIMESTAMP is second-precision).
         await msgs.create(

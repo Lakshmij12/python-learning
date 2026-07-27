@@ -38,9 +38,9 @@ class MessageStatus(str, enum.Enum):
 
 
 class MemoryType(str, enum.Enum):
-    EPISODIC = "episodic"   # summarised conversation history
-    SEMANTIC = "semantic"   # extracted facts / knowledge
-    PROFILE = "profile"     # durable preferences about the owner
+    EPISODIC = "episodic"  # summarised conversation history
+    SEMANTIC = "semantic"  # extracted facts / knowledge
+    PROFILE = "profile"  # durable preferences about the owner
 
 
 class TaskStatus(str, enum.Enum):

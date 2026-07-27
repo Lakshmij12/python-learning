@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.agents.tools.base import Tool, ToolContext
 from app.database.repositories.repositories import (
@@ -34,7 +34,12 @@ class CreateTaskTool(Tool):
         title = (args.get("title") or "").strip()
         if not title:
             return "I need a task title to create a task."
-        priority = Priority(args["priority"]) if args.get("priority") in {p.value for p in Priority} else Priority.MEDIUM
+        valid_priorities = {p.value for p in Priority}
+        priority = (
+            Priority(args["priority"])
+            if args.get("priority") in valid_priorities
+            else Priority.MEDIUM
+        )
         task = await TaskRepository(ctx.session).create(
             user_id=ctx.user_id, title=title, priority=priority
         )
@@ -88,7 +93,7 @@ class CreateReminderTool(Tool):
         try:
             remind_at = datetime.fromisoformat(raw_time.replace("Z", "+00:00"))
             if remind_at.tzinfo is None:
-                remind_at = remind_at.replace(tzinfo=timezone.utc)
+                remind_at = remind_at.replace(tzinfo=UTC)
         except ValueError:
             return "I couldn't parse that time. Use ISO-8601, e.g. 2026-01-01T09:00:00Z."
         await ReminderRepository(ctx.session).create(

@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.config.settings import get_settings
 from app.database.repositories.repositories import UserRepository
 from app.messaging.base import InboundMessage
 from app.models.enums import MessageType
 from app.security.crypto import decrypt
 from app.services.ingestion_service import IngestionService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytestmark = pytest.mark.asyncio
 

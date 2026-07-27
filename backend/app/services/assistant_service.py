@@ -76,7 +76,9 @@ class AssistantService:
         await self.messages.update(inbound, status=MessageStatus.READ)
         return reply
 
-    async def _persist_and_send(self, to_number: str, conversation_id: uuid.UUID, reply: str) -> None:
+    async def _persist_and_send(
+        self, to_number: str, conversation_id: uuid.UUID, reply: str
+    ) -> None:
         stored = await self.messages.create(
             conversation_id=conversation_id,
             role=MessageRole.ASSISTANT,

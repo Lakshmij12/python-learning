@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.exceptions import AuthenticationError, ConflictError
 from app.security import tokens
 from app.services.auth_service import AuthService
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytestmark = pytest.mark.asyncio
 
@@ -35,9 +34,7 @@ async def test_wrong_password_rejected(db_session: AsyncSession) -> None:
     svc = AuthService(db_session)
     await svc.register(email="a@example.com", password="StrongPass123")
     with pytest.raises(AuthenticationError):
-        await svc.authenticate(
-            email="a@example.com", password="nope", user_agent=None, ip=None
-        )
+        await svc.authenticate(email="a@example.com", password="nope", user_agent=None, ip=None)
 
 
 async def test_unknown_user_rejected(db_session: AsyncSession) -> None:

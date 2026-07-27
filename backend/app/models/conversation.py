@@ -34,9 +34,7 @@ class Conversation(UUIDMixin, TimestampMixin, SoftDeleteMixin, Base):
     contact_wa_id: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     title: Mapped[str | None] = mapped_column(String(300), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
-    last_message_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    last_message_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     meta: Mapped[dict] = mapped_column(default=dict)
 
     user: Mapped[User] = relationship(back_populates="conversations")
@@ -46,9 +44,7 @@ class Conversation(UUIDMixin, TimestampMixin, SoftDeleteMixin, Base):
         order_by="Message.created_at",
     )
 
-    __table_args__ = (
-        Index("ix_conversations_user_contact", "user_id", "contact_wa_id"),
-    )
+    __table_args__ = (Index("ix_conversations_user_contact", "user_id", "contact_wa_id"),)
 
 
 class Message(UUIDMixin, TimestampMixin, SoftDeleteMixin, Base):
@@ -66,9 +62,7 @@ class Message(UUIDMixin, TimestampMixin, SoftDeleteMixin, Base):
         String(128), unique=True, index=True, nullable=True
     )
     role: Mapped[MessageRole] = mapped_column(SAEnum(MessageRole), nullable=False)
-    direction: Mapped[MessageDirection] = mapped_column(
-        SAEnum(MessageDirection), nullable=False
-    )
+    direction: Mapped[MessageDirection] = mapped_column(SAEnum(MessageDirection), nullable=False)
     message_type: Mapped[MessageType] = mapped_column(
         SAEnum(MessageType), default=MessageType.TEXT, nullable=False
     )

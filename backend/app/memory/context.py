@@ -64,9 +64,7 @@ class ContextBuilder:
         recalled = await self.memory.recall(user_id=user_id, query=user_input, top_k=recall_k)
         if recalled:
             joined = "\n".join(f"- {sanitize_untrusted(r)}" for r in recalled)
-            prompt.append(
-                ChatMessage(Role.SYSTEM, f"Relevant remembered context:\n{joined}")
-            )
+            prompt.append(ChatMessage(Role.SYSTEM, f"Relevant remembered context:\n{joined}"))
 
         # 3. Rolling conversation summary.
         conversation = await self.conversations.get(conversation_id)

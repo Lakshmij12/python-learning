@@ -43,9 +43,7 @@ class CloudApiProvider(MessagingProvider):
 
     # --- webhook verification ---------------------------------------------
 
-    def verify_webhook(
-        self, *, mode: str | None, token: str | None, challenge: str | None
-    ) -> str:
+    def verify_webhook(self, *, mode: str | None, token: str | None, challenge: str | None) -> str:
         expected = self._settings.verify_token.get_secret_value()
         if mode == "subscribe" and token and hmac.compare_digest(token, expected):
             return challenge or ""

@@ -6,6 +6,8 @@ requires-python = ">=3.12"
 readme = "../README.md"
 license = { text = "MIT" }
 
+# Core runtime dependencies — only what the code actually imports. LLM providers
+# talk to REST APIs via httpx, so vendor SDKs are optional extras (see below).
 dependencies = [
     # Web framework / server
     "fastapi>=0.111",
@@ -19,6 +21,7 @@ dependencies = [
     # Database / ORM / migrations
     "sqlalchemy[asyncio]>=2.0.30",
     "asyncpg>=0.29",
+    "psycopg[binary]>=3.1",   # sync driver for Alembic migrations
     "alembic>=1.13",
     "pgvector>=0.3",
     # Cache / queue
@@ -26,7 +29,6 @@ dependencies = [
     "celery>=5.4",
     # Security / auth
     "pyjwt>=2.8",
-    "passlib[bcrypt]>=1.7.4",
     "cryptography>=42.0",
     "argon2-cffi>=23.1",
     # Observability / logging
@@ -34,24 +36,30 @@ dependencies = [
     # HTTP client
     "httpx>=0.27",
     "tenacity>=8.3",
-    # AI / LLM / RAG
+]
+
+[project.optional-dependencies]
+# Vendor SDKs and agent frameworks. The current adapters use httpx directly;
+# install these to swap in the official SDKs or LangGraph-native orchestration.
+ai = [
     "langchain>=0.2",
     "langgraph>=0.1",
     "openai>=1.30",
     "google-generativeai>=0.7",
     "anthropic>=0.28",
     "tiktoken>=0.7",
-    # Documents / OCR / audio
+]
+# Document understanding pipeline (PDF text + OCR), used by the worker tasks.
+documents = [
     "pypdf>=4.2",
     "pillow>=10.3",
     "pytesseract>=0.3.10",
 ]
-
-[project.optional-dependencies]
 dev = [
     "pytest>=8.2",
     "pytest-asyncio>=0.23",
     "pytest-cov>=5.0",
+    "aiosqlite>=0.20",
     "httpx>=0.27",
     "ruff>=0.4",
     "black>=24.4",
@@ -81,7 +89,11 @@ src = ["app", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "S", "C4", "SIM", "ASYNC"]
 # S101 (assert) is fine in tests; handled by per-file ignores below.
-ignore = ["S104"]  # binding to 0.0.0.0 is intentional inside containers
+ignore = [
+    "S104",   # binding to 0.0.0.0 is intentional inside containers
+    "UP042",  # str+Enum is deliberate: stable string values for DB/JSON
+    "UP046",  # keep classic Generic[...] base for the repository pattern
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106"]

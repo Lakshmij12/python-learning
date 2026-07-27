@@ -5,13 +5,12 @@ from __future__ import annotations
 import uuid
 
 import pytest
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.agents.orchestrator import AgentService
 from app.commands.handlers import CommandRouter
 from app.llm.base import ChatResult, EmbeddingResult, ToolCall, Usage
 from app.models.productivity import Task
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytestmark = pytest.mark.asyncio
 
@@ -25,7 +24,9 @@ class ToolCallingRouter:
     async def embed(self, texts, *, user_id=None):  # noqa: ANN001
         return EmbeddingResult(vectors=[[0.0] * 3 for _ in texts], provider="fake", model="e")
 
-    async def chat(self, messages, *, tools=None, temperature=None, max_tokens=None, user_id=None):  # noqa: ANN001
+    async def chat(
+        self, messages, *, tools=None, temperature=None, max_tokens=None, user_id=None
+    ):  # noqa: ANN001
         self.chat_calls += 1
         if self.chat_calls == 1 and tools:
             return ChatResult(
@@ -35,13 +36,17 @@ class ToolCallingRouter:
                 usage=Usage(1, 1),
                 tool_calls=[ToolCall(id="c1", name="create_task", arguments={"title": "Buy milk"})],
             )
-        return ChatResult(content="Done — I added ‘Buy milk’ to your tasks.", provider="fake", model="m")
+        return ChatResult(
+            content="Done — I added ‘Buy milk’ to your tasks.", provider="fake", model="m"
+        )
 
 
 async def test_agent_invokes_tool_and_replies(db_session: AsyncSession) -> None:
     user_id, conv_id = uuid.uuid4(), uuid.uuid4()
     agent = AgentService(db_session, ToolCallingRouter())  # type: ignore[arg-type]
-    reply = await agent.handle(user_id=user_id, conversation_id=conv_id, text="add buy milk to my list")
+    reply = await agent.handle(
+        user_id=user_id, conversation_id=conv_id, text="add buy milk to my list"
+    )
     assert "Buy milk" in reply
     # The tool actually created a task in the database.
     count = (await db_session.execute(select(func.count()).select_from(Task))).scalar_one()

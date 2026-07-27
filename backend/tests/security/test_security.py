@@ -6,7 +6,6 @@ import base64
 import os
 
 import pytest
-
 from app.core.exceptions import AuthenticationError, ConfigurationError
 from app.security import passwords, tokens
 from app.security.crypto import Cipher

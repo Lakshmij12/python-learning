@@ -97,7 +97,8 @@ class AppSettings(_Base):
     environment: Environment = Environment.LOCAL
     debug: bool = False
     log_level: LogLevel = LogLevel.INFO
-    host: str = "0.0.0.0"
+    # Bind all interfaces inside the container (intentional).
+    host: str = "0.0.0.0"  # noqa: S104  # nosec B104
     port: int = 8000
     # Public base URL used to build webhook/callback URLs.
     base_url: str = "http://localhost:8000"
@@ -186,7 +187,11 @@ class RedisSettings(_Base):
     @property
     def dsn(self) -> str:
         auth = f":{self.password.get_secret_value()}@" if self.password else ""
-        return str(RedisDsn.build(scheme="redis", host=f"{auth}{self.host}", port=self.port, path=str(self.db)))
+        return str(
+            RedisDsn.build(
+                scheme="redis", host=f"{auth}{self.host}", port=self.port, path=str(self.db)
+            )
+        )
 
 
 # ---------------------------------------------------------------------------

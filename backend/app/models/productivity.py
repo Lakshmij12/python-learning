@@ -58,9 +58,7 @@ class Reminder(UUIDMixin, TimestampMixin, SoftDeleteMixin, Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
     message: Mapped[str] = mapped_column(Text, nullable=False)
-    remind_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, index=True
-    )
+    remind_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     status: Mapped[ReminderStatus] = mapped_column(
         SAEnum(ReminderStatus), default=ReminderStatus.SCHEDULED, nullable=False
     )

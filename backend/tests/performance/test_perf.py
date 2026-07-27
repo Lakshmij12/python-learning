@@ -10,7 +10,6 @@ import os
 import time
 
 import pytest
-
 from app.rag.chunker import chunk_text
 from app.security.crypto import Cipher
 

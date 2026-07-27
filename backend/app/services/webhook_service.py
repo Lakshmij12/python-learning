@@ -31,7 +31,9 @@ class WebhookService:
         self.replay = replay_guard
         self.ingestion = IngestionService(session)
 
-    async def handle_event(self, *, raw_body: bytes, signature_header: str | None) -> list[uuid.UUID]:
+    async def handle_event(
+        self, *, raw_body: bytes, signature_header: str | None
+    ) -> list[uuid.UUID]:
         """Verify + ingest a webhook event. Returns new message ids."""
         # 1. Authenticate the payload (HMAC) — raises on mismatch.
         self.provider.verify_signature(payload=raw_body, signature_header=signature_header)

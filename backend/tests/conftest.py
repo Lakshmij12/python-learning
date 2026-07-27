@@ -11,13 +11,12 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 
 import pytest_asyncio
+from app.models import Base
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-
-from app.models import Base
 
 
 @pytest_asyncio.fixture

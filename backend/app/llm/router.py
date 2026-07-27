@@ -90,9 +90,7 @@ class LLMRouter:
                 continue
         raise LLMProviderError("All LLM providers failed.") from last_error
 
-    async def embed(
-        self, texts: list[str], *, user_id: uuid.UUID | None = None
-    ) -> EmbeddingResult:
+    async def embed(self, texts: list[str], *, user_id: uuid.UUID | None = None) -> EmbeddingResult:
         last_error: Exception | None = None
         for name in self._chain():
             try:

@@ -50,8 +50,7 @@ def _redact(_logger: Any, _method: str, event_dict: dict[str, Any]) -> dict[str,
             return value
         if isinstance(value, dict):
             return {
-                k: (_MASK if _SENSITIVE_KEYS.search(str(k)) else scrub(v))
-                for k, v in value.items()
+                k: (_MASK if _SENSITIVE_KEYS.search(str(k)) else scrub(v)) for k, v in value.items()
             }
         if isinstance(value, (list, tuple)):
             return type(value)(scrub(v) for v in value)

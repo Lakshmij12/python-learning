@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from app.config.settings import LLMProviderName, get_settings
 from app.core.exceptions import LLMProviderError
 from app.llm.base import ChatMessage, ChatResult, EmbeddingResult, LLMProvider, Role, Usage
@@ -18,7 +17,9 @@ class FakeProvider(LLMProvider):
         self._fail = fail
         self.calls = 0
 
-    async def chat(self, messages, *, model=None, temperature=None, tools=None, max_tokens=None):  # noqa: ANN001
+    async def chat(
+        self, messages, *, model=None, temperature=None, tools=None, max_tokens=None
+    ):  # noqa: ANN001
         self.calls += 1
         if self._fail:
             raise LLMProviderError(f"{self.name} down")
@@ -80,9 +81,8 @@ async def test_raises_when_all_fail() -> None:
 
 
 async def test_usage_is_recorded(db_session) -> None:  # noqa: ANN001
-    from sqlalchemy import func, select
-
     from app.models.system import LLMUsage
+    from sqlalchemy import func, select
 
     router = LLMRouter(
         session=db_session,

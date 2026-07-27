@@ -7,7 +7,6 @@ import hmac
 import json
 
 import pytest
-
 from app.config.settings import get_settings
 from app.core.exceptions import WebhookVerificationError
 from app.models.enums import MessageType
@@ -33,9 +32,10 @@ def _sign(secret: str, body: bytes) -> str:
 
 
 def test_verify_webhook_success(provider) -> None:  # noqa: ANN001
-    assert provider.verify_webhook(
-        mode="subscribe", token="verify-me-123", challenge="CHALLENGE"
-    ) == "CHALLENGE"
+    assert (
+        provider.verify_webhook(mode="subscribe", token="verify-me-123", challenge="CHALLENGE")
+        == "CHALLENGE"
+    )
 
 
 def test_verify_webhook_wrong_token(provider) -> None:  # noqa: ANN001

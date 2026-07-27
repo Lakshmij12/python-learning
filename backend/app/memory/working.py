@@ -7,6 +7,7 @@ store degrades gracefully: with no Redis, callers fall back to the database.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import uuid
 
@@ -56,7 +57,5 @@ class WorkingMemory:
 
     async def clear(self, conversation_id: uuid.UUID) -> None:
         if self._redis is not None:
-            try:
+            with contextlib.suppress(Exception):
                 await self._redis.delete(self._key(conversation_id))  # type: ignore[attr-defined]
-            except Exception:  # noqa: BLE001
-                pass

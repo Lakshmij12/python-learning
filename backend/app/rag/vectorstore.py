@@ -85,8 +85,8 @@ class ChromaStore(VectorStore):  # pragma: no cover - optional backend
     def __init__(self, collection: str = "assistant") -> None:
         try:
             import chromadb
-        except ImportError as exc:  # noqa: F841
-            raise RuntimeError("chromadb is not installed; set RAG_VECTOR_STORE=pgvector.")
+        except ImportError as exc:
+            raise RuntimeError("chromadb is not installed; set RAG_VECTOR_STORE=pgvector.") from exc
         self._client = chromadb.Client()
         self._collection = self._client.get_or_create_collection(collection)
 

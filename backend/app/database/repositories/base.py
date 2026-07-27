@@ -8,7 +8,7 @@ rather than raw SQLAlchemy. Soft-deletable models are filtered to exclude
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Generic, TypeVar
 
 from sqlalchemy import func, select
@@ -99,7 +99,7 @@ class BaseRepository(Generic[ModelT]):
     async def delete(self, obj: ModelT, *, hard: bool = False) -> None:
         """Soft-delete when supported (unless ``hard``); otherwise remove."""
         if self._supports_soft_delete and not hard:
-            obj.deleted_at = datetime.now(timezone.utc)  # type: ignore[attr-defined]
+            obj.deleted_at = datetime.now(UTC)  # type: ignore[attr-defined]
             await self.session.flush()
         else:
             await self.session.delete(obj)

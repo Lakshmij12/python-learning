@@ -10,7 +10,7 @@ Supports two credential types:
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import Depends, Header
@@ -65,7 +65,7 @@ async def _user_from_jwt(db: AsyncSession, token: str) -> User:
 async def _user_from_api_key(db: AsyncSession, raw_key: str) -> User:
     repo = ApiKeyRepository(db)
     api_key = await repo.get_by_key_hash(tokens.hash_token(raw_key))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = ensure_aware(api_key.expires_at) if api_key else None
     if api_key is None or (expires is not None and expires < now):
         raise AuthenticationError("Invalid or expired API key.")

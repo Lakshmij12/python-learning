@@ -7,7 +7,7 @@ repositories and the security primitives, keeping it unit-testable without HTTP.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -72,7 +72,7 @@ class AuthService:
             await self.users.update(user, password_hash=passwords.hash_password(password))
 
         pair = await self._issue_pair(user, user_agent=user_agent, ip=ip)
-        await self.users.update(user, last_login_at=datetime.now(timezone.utc))
+        await self.users.update(user, last_login_at=datetime.now(UTC))
         await self._audit(user.id, AuditAction.LOGIN, "user", str(user.id), ip=ip)
         return pair
 
@@ -82,7 +82,7 @@ class AuthService:
         """Rotate a refresh token: validate, revoke old, issue a new pair."""
         token_hash = tokens.hash_token(refresh_token)
         session = await self.sessions.get_by_refresh_hash(token_hash)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if session is None or ensure_aware(session.expires_at) < now:
             raise AuthenticationError("Invalid or expired refresh token.")
 
@@ -100,7 +100,7 @@ class AuthService:
         """Revoke a single session (per-device logout)."""
         session = await self.sessions.get_by_refresh_hash(tokens.hash_token(refresh_token))
         if session is not None:
-            await self.sessions.update(session, revoked_at=datetime.now(timezone.utc))
+            await self.sessions.update(session, revoked_at=datetime.now(UTC))
             await self._audit(session.user_id, AuditAction.LOGOUT, "session", str(session.id))
 
     # --- helpers -----------------------------------------------------------
@@ -138,7 +138,7 @@ class AuthService:
                 resource_type=resource_type,
                 resource_id=resource_id,
                 ip_address=ip,
-                occurred_at=datetime.now(timezone.utc),
+                occurred_at=datetime.now(UTC),
             )
         )
         await self.session.flush()

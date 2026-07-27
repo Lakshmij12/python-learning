@@ -57,9 +57,7 @@ async def verify(
     hub_challenge: Annotated[str | None, Query(alias="hub.challenge")] = None,
 ) -> str:
     """Meta subscription handshake. Returns the challenge on success."""
-    return provider.verify_webhook(
-        mode=hub_mode, token=hub_verify_token, challenge=hub_challenge
-    )
+    return provider.verify_webhook(mode=hub_mode, token=hub_verify_token, challenge=hub_challenge)
 
 
 @router.post("/whatsapp", status_code=status.HTTP_200_OK)

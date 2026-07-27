@@ -21,9 +21,7 @@ class UserRepository(BaseRepository[User]):
     model = User
 
     async def get_by_email(self, email: str) -> User | None:
-        stmt = select(User).where(
-            User.email == email.lower(), User.deleted_at.is_(None)
-        )
+        stmt = select(User).where(User.email == email.lower(), User.deleted_at.is_(None))
         return (await self.session.execute(stmt)).scalar_one_or_none()
 
     async def first_active(self) -> User | None:
@@ -105,18 +103,14 @@ class MemoryRepository(BaseRepository[Memory]):
 class EmbeddingRepository(BaseRepository[Embedding]):
     model = Embedding
 
-    async def similar(
-        self, query_vector: list[float], *, top_k: int = 6
-    ) -> list[Embedding]:
+    async def similar(self, query_vector: list[float], *, top_k: int = 6) -> list[Embedding]:
         """Nearest-neighbour search (PostgreSQL/pgvector only).
 
         Uses cosine distance via the ``<=>`` operator exposed by pgvector's
         SQLAlchemy type. On non-Postgres dialects this raises at query time.
         """
         stmt = (
-            select(Embedding)
-            .order_by(Embedding.vector.cosine_distance(query_vector))
-            .limit(top_k)
+            select(Embedding).order_by(Embedding.vector.cosine_distance(query_vector)).limit(top_k)
         )
         return list((await self.session.execute(stmt)).scalars().all())
 

@@ -9,15 +9,14 @@ from collections.abc import AsyncIterator
 
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
-
 from app.config.settings import get_settings
 from app.database.session import get_db
 from app.main import create_app
 from app.messaging.factory import get_messaging_provider
 from app.models import Base
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 
 pytestmark = pytest.mark.asyncio
 

@@ -22,7 +22,7 @@ from app.core.logging import configure_logging, get_logger
 
 if TYPE_CHECKING:  # avoid importing heavy/optional deps at module import time
     from redis.asyncio import Redis
-    from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, AsyncSession
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 logger = get_logger(__name__)
 

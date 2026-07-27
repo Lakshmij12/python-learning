@@ -10,7 +10,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -72,7 +72,7 @@ async def cmd_remind(ctx: CommandContext) -> str:
     try:
         remind_at = datetime.fromisoformat(raw_time.strip().replace("Z", "+00:00"))
         if remind_at.tzinfo is None:
-            remind_at = remind_at.replace(tzinfo=timezone.utc)
+            remind_at = remind_at.replace(tzinfo=UTC)
     except ValueError:
         return "Couldn't parse the time. Example: /remind 2026-01-01T09:00:00Z | Call the dentist"
     if not message:

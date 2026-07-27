@@ -6,13 +6,12 @@ from collections.abc import AsyncIterator
 
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.pool import StaticPool
-
 from app.database.session import get_db
 from app.main import create_app
 from app.models import Base
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.pool import StaticPool
 
 pytestmark = pytest.mark.asyncio
 
@@ -102,9 +101,7 @@ async def test_task_crud_flow(client: AsyncClient) -> None:
     assert listing.status_code == 200
     assert any(t["id"] == task_id for t in listing.json())
 
-    patched = await client.patch(
-        f"/tasks/{task_id}", json={"status": "done"}, headers=headers
-    )
+    patched = await client.patch(f"/tasks/{task_id}", json={"status": "done"}, headers=headers)
     assert patched.status_code == 200
     assert patched.json()["status"] == "done"
 

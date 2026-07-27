@@ -53,9 +53,7 @@ class OllamaProvider(LLMProvider):
             content=data.get("message", {}).get("content", ""),
             provider=self.name,
             model=payload["model"],
-            usage=Usage(
-                data.get("prompt_eval_count", 0) or 0, data.get("eval_count", 0) or 0
-            ),
+            usage=Usage(data.get("prompt_eval_count", 0) or 0, data.get("eval_count", 0) or 0),
             latency_ms=latency,
         )
 
@@ -66,7 +64,8 @@ class OllamaProvider(LLMProvider):
                 "/api/embeddings", {"model": model or self._cfg.embedding_model, "prompt": text}
             )
             vectors.append(data.get("embedding", []))
-        return EmbeddingResult(vectors=vectors, provider=self.name, model=model or self._cfg.embedding_model)
+        model_name = model or self._cfg.embedding_model
+        return EmbeddingResult(vectors=vectors, provider=self.name, model=model_name)
 
     async def _post(self, path: str, payload: dict) -> dict:
         url = f"{self._base_url()}{path}"

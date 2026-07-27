@@ -64,9 +64,7 @@ class MemoryService:
             logger.warning("memory.embed_failed", error=str(exc))
         return memory
 
-    async def recall(
-        self, *, user_id: uuid.UUID, query: str, top_k: int = 6
-    ) -> list[str]:
+    async def recall(self, *, user_id: uuid.UUID, query: str, top_k: int = 6) -> list[str]:
         """Return the most semantically-similar remembered texts (decrypted)."""
         try:
             embedded = await self.router.embed([query], user_id=user_id)

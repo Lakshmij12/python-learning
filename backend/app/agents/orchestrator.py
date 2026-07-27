@@ -61,9 +61,7 @@ class AgentService:
         self.retriever = Retriever(session, router)
         self.registry = registry or ToolRegistry(default_tools())
 
-    async def handle(
-        self, *, user_id: uuid.UUID, conversation_id: uuid.UUID, text: str
-    ) -> str:
+    async def handle(self, *, user_id: uuid.UUID, conversation_id: uuid.UUID, text: str) -> str:
         state = AgentState(user_id=user_id, conversation_id=conversation_id, user_input=text)
 
         # 1. Guard against prompt injection.
@@ -86,9 +84,7 @@ class AgentService:
             )
 
         # 4. Generate, optionally calling a tool once.
-        result = await self.router.chat(
-            state.prompt, tools=self.registry.specs(), user_id=user_id
-        )
+        result = await self.router.chat(state.prompt, tools=self.registry.specs(), user_id=user_id)
         if result.tool_calls:
             tool_output = await self._run_tools(result.tool_calls, user_id)
             # 5. Second pass: let the model turn tool output into a reply.
